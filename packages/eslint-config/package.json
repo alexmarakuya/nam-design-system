@@ -1,0 +1,20 @@
+{
+  "name": "@nam/eslint-config",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "./index.mjs",
+  "exports": {
+    ".": "./index.mjs",
+    "./next": "./next.mjs"
+  },
+  "files": [
+    "index.mjs",
+    "next.mjs",
+    ".prettierrc.json",
+    ".editorconfig"
+  ],
+  "peerDependencies": {
+    "eslint": "^9.0.0"
+  }
+}

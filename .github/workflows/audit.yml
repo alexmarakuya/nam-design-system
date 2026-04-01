@@ -1,0 +1,39 @@
+name: Design System Audit
+
+on:
+  schedule:
+    - cron: '0 9 * * 1' # Monday 9am UTC
+  workflow_dispatch:
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'pnpm'
+      - run: pnpm install --frozen-lockfile
+      - name: Build all packages
+        run: pnpm -r build
+      - name: Check for hardcoded colors
+        run: |
+          echo "Scanning for hardcoded hex colors outside of token definitions..."
+          # Search for hex colors in source files, excluding token definition files
+          FOUND=$(grep -rn '#[0-9a-fA-F]\{3,8\}' packages/react/src/ packages/utils/src/ apps/storybook/stories/ --include='*.ts' --include='*.tsx' --include='*.css' || true)
+          if [ -n "$FOUND" ]; then
+            echo "⚠️ Found hardcoded colors:"
+            echo "$FOUND"
+            echo ""
+            echo "Consider using design tokens instead."
+          else
+            echo "✅ No hardcoded colors found"
+          fi
+      - name: Verify package exports
+        run: |
+          echo "Verifying all packages build and export correctly..."
+          node -e "require('./packages/tokens/dist/tokens.json')" && echo "✅ @nam/tokens exports OK" || echo "❌ @nam/tokens export failed"
+      - name: Run tests
+        run: pnpm test

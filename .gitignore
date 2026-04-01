@@ -1,0 +1,7 @@
+node_modules/
+packages/tokens/dist/
+packages/react/dist/
+*.tsbuildinfo
+storybook-static/
+.env
+.env.local
